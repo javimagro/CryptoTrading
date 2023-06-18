@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="price_amount">
+
+        <item>0.9</item>
+        <item>0.09</item>
+        <item>0.009</item>
+        <item>0.0009</item>
+        <item>0.00009</item>
+        <item>0.000009</item>
+        <item>0.0000009</item>
+        <item>0.00000009</item>
+    </string-array>
+
+</resources>

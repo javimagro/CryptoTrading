@@ -1,0 +1,196 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:textAlignment="viewStart"
+        android:textStyle="italic"
+        android:title="Main options">
+
+        <ListPreference
+            android:defaultValue="false"
+            android:entries="@array/Filter_Coin"
+            android:entryValues="@array/Filter_Coin"
+            android:icon="@android:drawable/ic_menu_search"
+            android:key="filter_coin"
+            android:title="Filter Coins with base:" />
+
+        <ListPreference
+            android:defaultValue="false"
+            android:entries="@array/Chart_Types"
+            android:entryValues="@array/Chart_Types"
+            android:icon="@drawable/chart"
+            android:key="chart_types"
+            android:title="Chart Period" />
+
+        <ListPreference
+            android:defaultValue="false"
+            android:entries="@array/Connection_Type"
+            android:entryValues="@array/Connection_Type"
+            android:icon="@drawable/signal"
+            android:key="con_types"
+            android:title="Connection Mode" />
+
+        <SwitchPreference
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:contextClickable="true"
+            android:defaultValue="false"
+            android:icon="@drawable/amount"
+            android:key="save_charts"
+            android:singleLineTitle="false"
+            android:title="Save zoom value in charts" />
+
+        <ListPreference
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:defaultValue="false"
+            android:entries="@array/margins"
+            android:entryValues="@array/margins"
+            android:icon="@drawable/flechabajo"
+            android:key="stop_loss_sell_margin"
+            android:singleLineTitle="false"
+            android:title="Price margin in StopLoss sell orders" />
+
+        <ListPreference
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:defaultValue="false"
+            android:entries="@array/Topten"
+            android:entryValues="@array/Topten"
+            android:icon="@drawable/flecha"
+            android:key="Topten"
+            android:singleLineTitle="false"
+            android:title="Coins to show in the Topten panel" />
+
+    </PreferenceCategory>
+
+
+    <PreferenceCategory
+        android:enabled="true"
+        android:title="Notifications">
+
+        <Preference
+            android:icon="@drawable/notif"
+            android:key="alert_id"
+            android:title="Price Alerts"
+            app:summary="Sound to play when a price alert has been reached" />
+
+        <Preference
+            android:icon="@drawable/notif"
+            android:key="sound_id"
+            android:title="@string/open_orders"
+            app:singleLineTitle="false"
+            app:summary="Sound to play when a buy/sell order has been...." />
+
+        <SwitchPreference
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:contextClickable="true"
+            android:defaultValue="false"
+            android:icon="@drawable/bubble"
+            android:key="notif_sent"
+            android:singleLineTitle="false"
+            android:title="Show when order is sent" />
+        <SwitchPreference
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:defaultValue="false"
+            android:icon="@drawable/bubble"
+            android:key="notif_cancel"
+            android:singleLineTitle="false"
+            android:title="Show when order is cancelled" />
+        <SwitchPreference
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:defaultValue="false"
+            android:icon="@drawable/bubble"
+            android:key="notif_part"
+            android:singleLineTitle="false"
+            android:title="Show when order is partially filled" />
+        <SwitchPreference
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:defaultValue="false"
+            android:icon="@drawable/bubble"
+            android:key="notif_filled"
+            android:singleLineTitle="false"
+            android:title="Show when order is complety filled" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Pumps detection">
+
+        <Preference
+            android:icon="@drawable/notif"
+            android:key="sound_pump_id"
+            android:title="Notification options"
+            app:summary="Sound to play when a pump has been detected"/>
+
+        <SwitchPreference
+            android:icon="@drawable/flecha"
+            android:key="detect_price_increase"
+            android:singleLineTitle="false"
+            android:title="Detect pumps when price rise." />
+
+        <ListPreference
+            android:defaultValue="false"
+            android:entries="@array/Price_Increase"
+            android:entryValues="@array/Price_Increase"
+            android:iconSpaceReserved="true"
+            android:key="price_increase"
+            android:singleLineTitle="false"
+            android:title="price percent change" />
+
+        <SwitchPreference
+            android:icon="@drawable/flechabajo"
+            android:iconSpaceReserved="true"
+            android:key="detect_price_decrease"
+            android:singleLineTitle="false"
+            android:title="Detect pumps when price fall." />
+
+        <ListPreference
+            android:defaultValue="false"
+            android:entries="@array/Price_Decrease"
+            android:entryValues="@array/Price_Decrease"
+            android:key="price_decrease"
+            android:singleLineTitle="false"
+            android:title="price percent change" />
+
+        <SwitchPreference
+            android:icon="@drawable/amount"
+            android:key="detect_vol_var"
+            android:singleLineTitle="false"
+            android:title="Detect pumps when volume change." />
+
+        <ListPreference
+            android:layout_height="wrap_content"
+            android:defaultValue="false"
+            android:entries="@array/Volume_Variation"
+            android:entryValues="@array/Volume_Variation"
+            android:iconSpaceReserved="true"
+            android:key="volume_variation"
+            android:singleLineTitle="false"
+            android:title="Percent volume change" />
+
+        <ListPreference
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:defaultValue="1"
+            android:entries="@array/price_amount"
+            android:entryValues="@array/price_amount"
+            android:icon="@drawable/chart"
+            android:key="min_price"
+            android:title="Ignore coins with price lower than" />"
+
+        <ListPreference
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:defaultValue="1"
+            android:entries="@array/Volume_Amount"
+            android:entryValues="@array/Volume_Amount"
+            android:icon="@drawable/chart"
+            android:key="vol_amount"
+            android:title="Ignore coins with volume lower than" />"
+    </PreferenceCategory>
+</PreferenceScreen>

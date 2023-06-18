@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/open_order_item"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="0dp"
+    app:cardBackgroundColor="@color/GRAY_DARK"
+    app:cardPreventCornerOverlap="true"
+    app:cardUseCompatPadding="true">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/background3">
+
+        <TextView
+            android:id="@+id/type_id3"
+            android:layout_width="8dp"
+            android:layout_height="47dp"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="5dp"
+            android:background="@color/MYBLUE" />
+
+        <TextView
+            android:id="@+id/coinname"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="7dp"
+            android:layout_toRightOf="@id/type_id3"
+            android:lineSpacingExtra="12sp"
+            android:text="@string/coinname"
+            android:textColor="@color/LBLUE"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/eq_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/coinname"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="false"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="7dp"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/border"
+            android:paddingLeft="10dp"
+            android:paddingEnd="10dp"
+            android:text="@string/price"
+            android:textAlignment="textEnd"
+            android:textColor="#FFFFFF"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/coinname"
+            android:layout_centerVertical="false"
+            android:layout_marginBottom="5dp"
+            android:layout_toStartOf="@id/eq_price"
+            android:lineSpacingExtra="12sp"
+            android:text="Price:"
+            android:textColor="#FFFFFF"
+            android:textSize="15sp" />
+
+    </RelativeLayout>
+
+
+</androidx.cardview.widget.CardView>
+

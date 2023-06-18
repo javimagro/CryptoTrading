@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/orders"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardBackgroundColor="@color/GRAY_DARK">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/coinname"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="4"
+            android:background="@drawable/cell_shape"
+            android:ellipsize="end"
+            android:padding="5dp"
+            android:singleLine="true"
+            android:text="@string/coinname"
+            android:textColor="#FFFFFF"
+            android:textSize="13sp" />
+
+
+        <TextView
+            android:id="@+id/coin_qty"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="3"
+            android:background="@drawable/cell_shape"
+            android:ellipsize="end"
+            android:padding="5dp"
+            android:singleLine="true"
+            android:text="@string/qty"
+            android:textAlignment="viewEnd"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/coin_total"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="3"
+            android:background="@drawable/cell_shape"
+            android:ellipsize="end"
+            android:padding="5dp"
+            android:singleLine="true"
+            android:text="@string/qty"
+            android:textAlignment="viewEnd"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/btc_eq"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="3"
+            android:background="@drawable/cell_shape"
+            android:ellipsize="end"
+            android:padding="5dp"
+            android:singleLine="true"
+            android:text="@string/btc"
+            android:textAlignment="viewEnd"
+            android:textSize="13sp" />
+
+
+    </LinearLayout>
+
+
+</androidx.cardview.widget.CardView>

@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        tools:ignore="UselessParent">
+
+        <ImageView
+            android:id="@+id/image_id"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_marginLeft="2dp"
+            android:layout_marginTop="7dp"
+            android:adjustViewBounds="false"
+            android:baselineAlignBottom="false"
+            android:cropToPadding="false"
+            app:srcCompat="@android:drawable/star_on"
+            tools:ignore="ContentDescription" />
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="2dp"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="false"
+                android:layout_alignParentLeft="true"
+                android:layout_marginTop="1dp"
+                android:layout_marginRight="3dp"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:text="@string/flashlight"
+                android:textColor="#000000"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+
+            <TextView
+                android:id="@+id/line_sep"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_below="@id/title"
+                android:layout_marginTop="1dp"
+                android:layout_marginEnd="3dp"
+                android:background="#000000" />
+
+            <TextView
+                android:id="@+id/type"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@id/title"
+                android:layout_alignParentStart="false"
+                android:layout_alignParentRight="false"
+                android:layout_marginTop="8dp"
+                android:layout_marginRight="3dp"
+                android:layout_toRightOf="@id/title"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="@string/possible_pump_by_price_increase"
+                android:textAlignment="viewEnd"
+                android:textColor="#000000"
+                android:textSize="13sp" />
+
+            <TextView
+                android:id="@+id/price_id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/old_price_id"
+                android:layout_alignParentStart="false"
+                android:text="@string/price_0_00"
+                android:textColor="#000000"
+                android:textSize="13sp" />
+
+            <TextView
+                android:id="@+id/old_price_id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/line_sep"
+                android:layout_alignParentStart="false"
+                android:text="@string/old_price_0_323434"
+                android:textColor="#000000"
+                android:textSize="13sp" />
+
+            <TextView
+                android:id="@+id/result"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/price_id"
+                android:layout_alignParentRight="false"
+                android:text="@string/change"
+                android:textColor="#000000"
+                android:textSize="13sp"
+                android:textStyle="bold|italic" />
+
+            <TextView
+                android:id="@+id/result_id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@id/result"
+                android:layout_alignParentStart="false"
+                android:layout_alignParentRight="false"
+                android:layout_marginStart="5dp"
+                android:layout_toRightOf="@id/result"
+                android:paddingRight="15dp"
+                android:text="@string/_3_03"
+                android:textColor="#056D64"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>

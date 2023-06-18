@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/content_frame"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background_flipped2"
+    android:orientation="vertical"
+    android:keepScreenOn="true"
+    tools:context=".Main_All_Fragment">
+
+        <!-- The primary full-screen view. This can be replaced with whatever view
+         is needed to present your content, e.g. VideoView, SurfaceView,
+         TextureView, etc. -->
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/nested_scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alwaysDrawnWithCache="false"
+        android:animateLayoutChanges="false"
+        android:animationCache="false"
+        android:background="@drawable/background"
+        tools:ignore="SpeakableTextPresentCheck"
+        tools:visibility="visible">
+
+
+
+        <androidx.gridlayout.widget.GridLayout
+            android:id="@+id/grid_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="0dp"
+            android:alwaysDrawnWithCache="false"
+            android:animateLayoutChanges="false"
+            android:animationCache="false"
+            android:clipToPadding="true"
+            app:useDefaultMargins="false">
+
+        </androidx.gridlayout.widget.GridLayout>
+
+
+    </androidx.core.widget.NestedScrollView>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="28dp"
+            app:backgroundTint="#A0B8BA"
+            app:fabSize="normal"
+            app:srcCompat="@drawable/flechabajo"
+            android:contentDescription="@string/todo" />
+
+
+    </FrameLayout>
+

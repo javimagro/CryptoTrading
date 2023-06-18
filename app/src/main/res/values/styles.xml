@@ -1,0 +1,37 @@
+<resources>
+
+    <!-- Base application theme. -->
+
+
+    <style name="FullscreenTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="colorPrimary">#000</item>
+        <item name="colorPrimaryDark">#000</item>
+        <item name="colorAccent">#0CD</item>
+    </style>
+
+
+    <!-- Splash Screen theme -->
+    <style name="SplashTheme" parent="FullscreenTheme">
+        <item name="android:windowBackground">@drawable/splash</item>
+    </style>
+
+
+    <style name="NoActionBar" parent="Theme.AppCompat.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowDisablePreview">true</item>
+        <item name="colorPrimary">#000</item>
+        <item name="colorPrimaryDark">#000</item>
+        <item name="colorAccent">#0CD</item>
+
+    </style>
+
+
+    <style name="AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <!-- Base application theme. -->
+
+
+</resources>

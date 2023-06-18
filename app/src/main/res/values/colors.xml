@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#19877C</color>
+    <color name="colorPrimaryDark">#054940</color>
+    <color name="colorAccent">#E23715</color>
+
+    <color name="GR">#43A047</color>
+    <color name="RD">#d32f2f</color>
+    <color name="GRAY_DARK">#373737</color>
+
+
+    <color name="MYBLUE">#0277bd</color>
+    <color name="LBLUE">#90caf9</color>
+
+    <color name="BKGROUND_DARK">#272424</color>
+    <color name="LGRAY">#e0f2f1</color>
+    <color name="MGRAY">#b1b2b1</color>
+
+    <color name="DKRD">#ff1744</color>
+    <color name="DKGR">#ccff90</color>
+
+    <color name="LKRD">#ffcc90</color>
+    <color name="LKGR">#ccff90</color>
+
+    <color name="DFBG">#272424</color>
+
+    <color name="White">#F2FAFA</color>
+
+
+</resources>

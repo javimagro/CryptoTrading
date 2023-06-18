@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="Filter_Coin">
+
+        <item name="NONE">NONE</item>
+        <item name="BTC">BTC</item>
+    <item name="ETH">ETH</item>
+    <item name="USDTD">USDT</item>
+
+    </string-array>
+
+</resources>

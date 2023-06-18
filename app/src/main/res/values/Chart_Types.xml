@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="Chart_Types">
+
+        <item>@string/_1min</item>
+        <item>@string/_3min</item>
+        <item>@string/_5min</item>
+        <item>@string/_15min</item>
+        <item>@string/_30min</item>
+        <item>@string/_1hour</item>
+        <item>@string/_2hour</item>
+        <item>@string/_4hour</item>
+
+    </string-array>
+
+</resources>

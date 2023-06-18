@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <group>
+        <item
+            android:id="@+id/key_mn"
+            android:icon="@android:drawable/ic_lock_lock"
+            android:title="@string/configure_api_keys" />
+        <item
+            android:id="@+id/kucoin_key_mn"
+            android:icon="@android:drawable/ic_lock_lock"
+            android:title="Configure Kucoin API Keys" />
+        <item
+            android:id="@+id/wallet_mn"
+            android:icon="@android:drawable/ic_menu_save"
+            android:title="@string/wallet" />
+        <item
+            android:id="@+id/open_order_mn"
+            android:icon="@drawable/bubble"
+            android:title="@string/open_orders" />
+        <item
+            android:id="@+id/alerts_mn"
+            android:icon="@drawable/notif"
+            android:title="@string/alerts" />
+    </group>
+    <group />
+    <group>
+        <item
+            android:id="@+id/settings_mn"
+            android:icon="@android:drawable/ic_menu_preferences"
+            android:title="@string/settings" />
+    </group>
+
+    <group>
+        <item
+            android:id="@+id/pump_detect_id"
+            android:title="@string/enable_pump_detection"
+            app:actionLayout="@layout/switch_item"
+            app:showAsAction="always" />
+    </group>
+
+
+    <group>
+        <item
+            android:id="@+id/use_kucoin_id"
+            android:title="Use KuCoin Exchange"
+            app:actionLayout="@layout/switch_item"
+            app:showAsAction="always" />
+    </group>
+
+    <item
+        android:id="@+id/privacyPolicyButton"
+        android:icon="@drawable/amount"
+        android:title="@string/privacy_policy" />
+    <item
+        android:id="@+id/Subscribe"
+        android:title="@string/subscribe_buy_sell" />
+
+</menu>

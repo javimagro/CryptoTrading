@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/open_order_item"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="0dp"
+    app:cardBackgroundColor="@color/GRAY_DARK"
+    app:cardPreventCornerOverlap="true"
+    app:cardUseCompatPadding="true">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/background3">
+
+        <TextView
+            android:id="@+id/type_id3"
+            android:layout_width="8dp"
+            android:layout_height="47dp"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="5dp"
+            android:background="#F80000" />
+
+        <TextView
+            android:id="@+id/eq_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@id/price"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="5sp"
+            android:text="@string/price"
+            android:textAlignment="textEnd"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/amount"
+            android:layout_width="120sp"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="false"
+            android:layout_toStartOf="@id/eq_amount"
+            android:lineSpacingExtra="12sp"
+            android:text="@string/amount"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/amount"
+            android:layout_alignStart="@id/amount"
+            android:layout_toStartOf="@id/eq_price"
+            android:lineSpacingExtra="12sp"
+            android:text="@string/price"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/eq_amount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@id/amount"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="5sp"
+            android:lineSpacingExtra="12sp"
+            android:text="@string/amount"
+            android:textAlignment="textEnd"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/coinname"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="7dp"
+            android:layout_toRightOf="@id/type_id3"
+            android:lineSpacingExtra="12sp"
+            android:text="@string/coinname"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/btc_eq"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/price"
+            android:layout_alignStart="@id/amount"
+            android:layout_alignParentEnd="false"
+            android:layout_alignParentRight="false"
+            android:layout_toStartOf="@id/eq_btc"
+            android:lineSpacingExtra="12sp"
+            android:text="@string/btc_eq"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            tools:ignore="RtlHardcoded" />
+
+        <TextView
+            android:id="@+id/eq_btc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@id/btc_eq"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="5sp"
+            android:lineSpacingExtra="12sp"
+            android:text="@string/btc"
+            android:textAlignment="textEnd"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp" />
+
+    </RelativeLayout>
+
+
+</androidx.cardview.widget.CardView>
+

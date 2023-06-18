@@ -1,0 +1,313 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="5dp"
+    android:animateLayoutChanges="false"
+    android:background="@drawable/border_gradient"
+    android:clipChildren="false">
+
+    <Button
+        android:id="@+id/limit_sell_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@id/buy_id"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="false"
+        android:layout_marginStart="3dp"
+        android:layout_toLeftOf="@id/sell_id"
+        android:backgroundTint="@color/RD"
+        android:clickable="true"
+        android:focusable="true"
+        android:text="@string/stop_loss_sell"
+        android:textSize="12sp" />
+
+    <Button
+        android:id="@+id/buy_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/alert_id"
+        android:layout_alignLeft="@id/alert_id"
+        android:layout_alignParentEnd="false"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="false"
+        android:layout_marginRight="3dp"
+        android:backgroundTint="#43A047"
+        android:clickable="true"
+        android:elegantTextHeight="false"
+        android:focusable="true"
+        android:text="@string/buy"
+        android:textSize="12sp"
+        tools:ignore="RtlHardcoded" />
+
+    <Button
+        android:id="@+id/sell_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@id/buy_id"
+        android:layout_alignParentBottom="false"
+        android:layout_toLeftOf="@id/buy_id"
+        android:backgroundTint="@color/RD"
+        android:clickable="true"
+        android:focusable="true"
+        android:text="@string/sell"
+        android:textSize="12sp" />
+
+    <Button
+        android:id="@+id/total_id"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignBaseline="@id/tbuy_items"
+        android:layout_alignParentBottom="false"
+        android:layout_toStartOf="@id/total_id2"
+        android:backgroundTint="@android:color/transparent"
+        android:padding="0dp"
+        android:text="@string/_100"
+        android:textColor="@android:color/secondary_text_light_nodisable" />
+
+    <Button
+        android:id="@+id/total_id2"
+        android:layout_width="45dp"
+        android:layout_height="50dp"
+        android:layout_alignBaseline="@id/tbuy_items"
+        android:layout_alignParentEnd="false"
+        android:layout_alignParentBottom="false"
+        android:layout_toStartOf="@id/total_id3"
+        android:backgroundTint="@android:color/transparent"
+        android:padding="0dp"
+        android:text="@string/_50"
+        android:textColor="@android:color/secondary_text_light_nodisable" />
+
+    <Button
+        android:id="@+id/total_id3"
+        android:layout_width="45dp"
+        android:layout_height="50dp"
+        android:layout_alignBaseline="@id/tbuy_items"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="false"
+        android:layout_marginEnd="3dp"
+        android:backgroundTint="@android:color/transparent"
+        android:padding="0dp"
+        android:text="@string/_25"
+        android:textColor="@android:color/secondary_text_light_nodisable" />
+
+    <Button
+        android:id="@+id/total_id4"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignBaseline="@id/tsell_items"
+        android:layout_alignStart="@id/total_id"
+        android:layout_alignParentBottom="false"
+        android:layout_marginStart="0dp"
+        android:layout_marginEnd="0dp"
+        android:layout_marginBottom="0dp"
+        android:backgroundTint="@android:color/transparent"
+        android:padding="0dp"
+        android:text="@string/_100"
+        android:textColor="@android:color/secondary_text_light_nodisable" />
+
+    <Button
+        android:id="@+id/total_id5"
+        android:layout_width="45dp"
+        android:layout_height="50dp"
+        android:layout_alignBaseline="@id/tsell_items"
+        android:layout_alignStart="@id/total_id2"
+        android:layout_alignParentBottom="false"
+        android:layout_marginStart="0dp"
+        android:layout_marginBottom="0dp"
+        android:backgroundTint="@android:color/transparent"
+        android:padding="0dp"
+        android:paddingStart="0dp"
+        android:text="@string/_50"
+        android:textColor="@android:color/secondary_text_light_nodisable"
+        tools:ignore="RtlSymmetry" />
+
+    <Button
+        android:id="@+id/total_id6"
+        android:layout_width="45dp"
+        android:layout_height="50dp"
+        android:layout_alignBaseline="@id/tsell_items"
+        android:layout_alignStart="@id/total_id3"
+        android:layout_alignParentEnd="false"
+        android:layout_alignParentBottom="false"
+        android:layout_marginStart="0dp"
+        android:layout_marginEnd="3dp"
+        android:layout_marginBottom="0dp"
+        android:backgroundTint="@android:color/transparent"
+        android:padding="0dp"
+        android:paddingStart="0dp"
+        android:text="@string/_25"
+        android:textColor="@android:color/secondary_text_light_nodisable"
+        tools:ignore="RtlSymmetry" />
+
+    <TextView
+        android:id="@+id/tcurrent_price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="false"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="15dp"
+        android:text="@string/current_price" />
+
+    <TextView
+        android:id="@+id/tbuy_price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tcurrent_price"
+        android:layout_alignStart="@id/tcurrent_price"
+        android:layout_alignParentBottom="false"
+        android:layout_marginTop="15dp"
+        android:text="@string/buy_sell_price" />
+
+    <TextView
+        android:id="@+id/tbuy_items"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/divider"
+        android:layout_alignParentBottom="false"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="5dp"
+        android:layout_toStartOf="@id/buy_items"
+        android:text="@string/buy_qty"
+        android:textColor="#DBD7D7" />
+
+    <TextView
+        android:id="@+id/tsell_items"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tbuy_items"
+        android:layout_alignParentBottom="false"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="5dp"
+        android:layout_toStartOf="@id/sell_items"
+        android:text="@string/sell_qty"
+        android:textColor="#DBD7D7"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/current_price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@id/tcurrent_price"
+        android:layout_alignParentBottom="false"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_toEndOf="@id/tcurrent_price"
+        android:background="@drawable/border"
+        android:clickable="false"
+        android:paddingLeft="5dp"
+        android:paddingTop="3dp"
+        android:paddingRight="5dp"
+        android:paddingBottom="3dp"
+        android:text="@string/_0_000033"
+        android:textAlignment="textEnd"
+        android:textColor="#DBD7D7"
+        android:textSize="14sp" />
+
+
+    <EditText
+        android:id="@+id/buy_price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@id/tbuy_price"
+        android:layout_alignParentBottom="false"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_toEndOf="@id/tcurrent_price"
+        android:background="@drawable/border"
+        android:clickable="true"
+        android:foreground="?attr/selectableItemBackground"
+        android:inputType="textPersonName"
+        android:paddingLeft="5dp"
+        android:paddingTop="3dp"
+        android:paddingRight="5dp"
+        android:paddingBottom="3dp"
+        android:text="@string/_0_000033"
+        android:textAlignment="textEnd"
+        android:textColor="#DBD7D7"
+        android:textSize="14sp"
+        android:focusable="true"
+        android:importantForAutofill="no"
+        tools:ignore="LabelFor" />
+
+    <TextView
+        android:id="@+id/buy_items"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@id/tbuy_items"
+        android:layout_alignParentBottom="false"
+        android:layout_marginEnd="5dp"
+        android:layout_toStartOf="@id/total_id"
+        android:background="@drawable/border"
+        android:minWidth="50dp"
+        android:paddingLeft="5dp"
+        android:paddingTop="3dp"
+        android:paddingRight="5dp"
+        android:paddingBottom="3dp"
+        android:text="@string/_3454"
+        android:textAlignment="textEnd"
+        android:textColor="#DBD7D7" />
+
+    <TextView
+        android:id="@+id/sell_items"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@id/tsell_items"
+        android:layout_alignParentBottom="false"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="5dp"
+        android:layout_toStartOf="@id/total_id4"
+        android:background="@drawable/border"
+        android:minWidth="50dp"
+        android:paddingLeft="5dp"
+        android:paddingTop="3dp"
+        android:paddingRight="5dp"
+        android:paddingBottom="3dp"
+        android:text="@string/_23234"
+        android:textAlignment="textEnd"
+        android:textColor="#DBD7D7" />
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="wrap_content"
+        android:layout_height="2dp"
+        android:layout_below="@id/tbuy_price"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="5dp"
+        android:background="?android:attr/listDivider" />
+
+    <View
+        android:id="@+id/divider2"
+        android:layout_width="wrap_content"
+        android:layout_height="2dp"
+        android:layout_below="@id/tsell_items"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="5dp"
+        android:background="?android:attr/listDivider" />
+
+    <Button
+        android:id="@+id/alert_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/divider2"
+        android:layout_alignParentRight="true"
+        android:layout_marginEnd="3dp"
+        android:layout_marginBottom="3dp"
+        android:backgroundTint="#F0626867"
+        android:text="Alert "
+        android:textSize="12sp" />
+
+    <Button
+        android:id="@+id/alert_repeat_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/alert_id"
+        android:layout_alignParentRight="false"
+        android:layout_toLeftOf="@id/alert_id"
+        android:backgroundTint="#F0626867"
+        android:text="Repeat Alert"
+        android:textSize="12sp" />
+
+
+</RelativeLayout>

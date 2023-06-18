@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="Connection_Type">
+
+    <item name="ALW">Always Realtime</item>
+    <item name="PART">Realtime only with Wifi connections.</item>
+    <item name="NEVER">Disable Realtime mode</item>
+
+    </string-array>
+
+</resources>
