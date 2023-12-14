@@ -1158,6 +1158,12 @@ public class FullscreenActivity extends AppCompatActivity implements PurchasesUp
         Config_Data.Config_Keys.Kucoin_Public_Key  = settings.getString("Kucoin_Public_Key", "");
         Config_Data.Config_Keys.Kucoin_passPhrase  = settings.getString("Kucoin_PassPhrase", "");
 
+/*
+        Config_Data.Config_Keys.Kucoin_Public_Key =  "1ca3cfbf-1394-4d11-9ebc-f6314c5c1fe6";
+        Config_Data.Config_Keys.Kucoin_Private_Key  =  "60468858de3a710006d74619";
+        Config_Data.Config_Keys.Kucoin_passPhrase  ="javi1313";
+*/
+
         Config_Data.Min_Volume_Pump = settings.getString("Min_Volume_Pump", "100000");
 
         Config_Data.Filter_Coin = settings.getString("Filter_Coin", "NONE");
