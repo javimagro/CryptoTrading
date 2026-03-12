@@ -1,86 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="com.android.vending.BILLING" />
-    <uses-permission android:name="android.permission.CAMERA"/>
 
     <application
         android:allowBackup="true"
-        android:fullBackupContent="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
+        android:label="CriptoTrading"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
 
         <activity
-            android:name=".FullscreenActivity"
-            android:launchMode = "singleTop"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/app_name"
-            android:allowTaskReparenting="true"
-            android:theme="@style/FullscreenTheme">
-
-        </activity>
-
-        <activity
-            android:name=".Charts_Main_Fragment"
-            android:launchMode = "singleTask"
-            android:label="@string/title_activity_tab"
-            android:parentActivityName=".FullscreenActivity"
-            android:theme="@style/NoActionBar">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".FullscreenActivity" />
-        </activity>
-        <activity
-            android:name=".Menu_Open_Orders"
-            android:label="@string/title_activity_open_orders"
-            android:theme="@style/NoActionBar" />
-        <activity
-            android:name=".Menu_Alerts"
-            android:theme="@style/NoActionBar" />
-        <activity android:name=".Menu_Preferences" />
-        <activity
-            android:name=".Main_Splash_Activity"
+            android:name=".SplashActivity"
             android:exported="true"
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
-                <action android:name="android.intent.action.VIEW" />
             </intent-filter>
         </activity>
-        <activity android:name=".Menu_My_Wallet"
-            android:theme="@style/NoActionBar"/>
-        <activity android:name=".Menu_Config_Keys" />
-        <activity android:name=".Menu_Config_Kucoin_Keys" />
 
         <activity
-            android:name=".Menu_CoinList"
-            android:label="@string/title_activity_coinlist"
-            android:parentActivityName=".FullscreenActivity"
+            android:name=".MarketOverviewActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:exported="false"
+            android:launchMode="singleTop"
+            android:theme="@style/FullscreenTheme" />
+
+        <activity
+            android:name=".CoinDetailActivity"
+            android:exported="false"
+            android:label="@string/title_activity_tab"
+            android:launchMode="singleTask"
+            android:parentActivityName=".MarketOverviewActivity"
             android:theme="@style/NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".FullscreenActivity" />
+                android:value=".MarketOverviewActivity" />
         </activity>
 
         <activity
-            android:name=".CaptureActivityAnyOrientation"
-            android:screenOrientation="fullSensor"
+            android:name=".AssetSearchActivity"
+            android:exported="false"
+            android:label="@string/title_activity_coinlist"
+            android:parentActivityName=".MarketOverviewActivity"
+            android:theme="@style/NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MarketOverviewActivity" />
+        </activity>
+
+        <activity android:name=".GlobalOrdersActivity" android:exported="false" />
+        <activity android:name=".GlobalAlertsActivity" android:exported="false" />
+        <activity android:name=".SettingsActivity" android:exported="false" />
+        <activity android:name=".WalletActivity" android:exported="false" />
+        <activity android:name=".BinanceApiConfigActivity" android:exported="false" />
+        <activity android:name=".KucoinApiConfigActivity" android:exported="false" />
+
+        <activity
+            android:name=".QrScannerActivity"
             android:stateNotNeeded="true"
             android:theme="@style/zxing_CaptureTheme"
-            android:windowSoftInputMode="stateAlwaysHidden" />
+            android:windowSoftInputMode="stateAlwaysHidden"
+            android:exported="false" />
 
-        <activity android:name=".PrivacyPolicyActivity" />
+        <activity android:name=".PrivacyPolicyActivity" android:exported="false" />
+
     </application>
-
 
 </manifest>

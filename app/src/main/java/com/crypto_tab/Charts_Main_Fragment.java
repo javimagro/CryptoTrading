@@ -1753,7 +1753,7 @@ public class Charts_Main_Fragment extends AppCompatActivity {
         if (spinner.getVisibility() != View.GONE && !force)
             return;
 
-           runOnUiThread(() -> Paint_Open_Alerts());
+        runOnUiThread(() -> Paint_Open_Alerts());
     }
 
 

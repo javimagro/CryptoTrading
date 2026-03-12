@@ -21,7 +21,6 @@ import android.icu.util.Calendar;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -38,6 +37,9 @@ import android.widget.RemoteViews;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -48,6 +50,9 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.core.view.MenuCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -61,11 +66,12 @@ import com.android.billingclient.api.BillingClient;
 import com.android.billingclient.api.BillingClientStateListener;
 import com.android.billingclient.api.BillingFlowParams;
 import com.android.billingclient.api.BillingResult;
+import com.android.billingclient.api.PendingPurchasesParams;
+import com.android.billingclient.api.ProductDetails;
 import com.android.billingclient.api.Purchase;
 import com.android.billingclient.api.PurchasesUpdatedListener;
-import com.android.billingclient.api.SkuDetails;
-import com.android.billingclient.api.SkuDetailsParams;
-import com.android.billingclient.api.SkuDetailsResponseListener;
+import com.android.billingclient.api.QueryProductDetailsParams;
+import com.android.billingclient.api.QueryPurchasesParams;
 import com.binance.api.client.BinanceApiCallback;
 import com.binance.api.client.BinanceApiClientFactory;
 import com.binance.api.client.BinanceApiRestClient;
@@ -126,10 +132,13 @@ import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
-
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class FullscreenActivity extends AppCompatActivity implements PurchasesUpdatedListener {
 
+    private static final ExecutorService backgroundExecutor = Executors.newSingleThreadExecutor();
+    private static final Handler mainHandler = new Handler(Looper.getMainLooper());
     public static final String PREFS_NAME = "UData";
     public static final String ALERTS_NAME = "UData_Alerts";
     public static final int MAX_ALERTS_ALLOWED = 3 ;
@@ -179,10 +188,10 @@ public class FullscreenActivity extends AppCompatActivity implements PurchasesUp
 
     /// Subscriptions...
 
+    private static ProductDetails SKUDetails_Compras;
     public static BillingClient billingClient;
 
     public static boolean BUY_SELL_SUBSCRIPTION;
-    public static SkuDetails SKUDetails_Compras;
     private final String Compras_SKU = "compras_001" ;
 
     static int Max_Buy_Times ;
@@ -273,7 +282,7 @@ public class FullscreenActivity extends AppCompatActivity implements PurchasesUp
             lastPrice = got_lastPrice ;
             volume = got_Volume ;
             priceChangePercent = got_priceChangePercent ;
-            if ( got_lastPrice.length() > 0 )
+            if (!got_lastPrice.isEmpty())
                 openPrice = got_openPrice ;
         }
 
@@ -308,6 +317,8 @@ public class FullscreenActivity extends AppCompatActivity implements PurchasesUp
 
     public static List<Coin_Data> CList_Data = null ;
 
+    private ActivityResultLauncher<Intent> keysLauncher;
+    private ActivityResultLauncher<Intent> prefsLauncher;
 
     static BinanceApiClientFactory factory;
     static BinanceApiRestClient client;
@@ -357,19 +368,73 @@ public class FullscreenActivity extends AppCompatActivity implements PurchasesUp
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
 
         setTheme(R.style.FullscreenTheme);
-
-        DrawerLayout mDrawerLayout;
-
         super.onCreate(savedInstanceState);
+
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), true);
 
         setContentView(R.layout.fullscreenactivity);
 
-        Set_Spinner ( View.GONE  ) ;
+        keysLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                        Save_Config_Data();
+                        if ( Alls_Fragment != null )
+                        {
+                            Alls_Fragment.Show_All_Coins ( ) ;
+                        }
+                    }
+                }
+        );
 
+        prefsLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                        Save_Config_Data();
+                        if ( Alls_Fragment != null )
+                        {
+                            Alls_Fragment.Show_All_Coins ( ) ;
+                        }
+                    }
+                }
+        );
+
+
+        setupBackNavigation();
+        setupUiBase();
+        setupToolbarAndDrawer();
+
+        initAppStateAndData();
+
+        setupDrawerSwitches();
+        setupBroadcasts();
+
+        initServicesAndWorkflows();
+    }
+
+    private void setupBackNavigation() {
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                DrawerLayout drawer = findViewById(R.id.drawer_layout);
+
+                if (drawer != null && drawer.isDrawerOpen(GravityCompat.START)) {
+                    drawer.closeDrawer(GravityCompat.START);
+                } else {
+                    setEnabled(false);
+                    getOnBackPressedDispatcher().onBackPressed();
+                    setEnabled(true);
+                }
+            }
+        });
+    }
+
+    private void setupUiBase() {
+        Set_Spinner(View.GONE);
         getWindow().setNavigationBarColor(Color.BLACK);
 
         Clear_Varibs();
@@ -378,118 +443,122 @@ public class FullscreenActivity extends AppCompatActivity implements PurchasesUp
         App_Context = getApplicationContext();
 
         MyDebug("Application", "onCreate method.");
+        MyDebug("Stating application...", "OnCreate mode.. ");
 
-        //ContextCompat.getColor(getApplicationContext(), android.R.color.background_dark);
+        Show_Connection_Status(false);
+    }
 
+    private void setupToolbarAndDrawer() {
         toolbar = findViewById(R.id.toolbar_main);
         setSupportActionBar(toolbar);
 
-        if (getSupportActionBar() != null)
+        if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
-        mDrawerLayout = findViewById(R.id.drawer_layout);
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.app_name, R.string.app_name);
-        mDrawerLayout.addDrawerListener(mDrawerToggle);
+        DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
+        mDrawerToggle = new ActionBarDrawerToggle(
+                this,
+                drawerLayout,
+                toolbar,
+                R.string.app_name,
+                R.string.app_name
+        );
+        drawerLayout.addDrawerListener(mDrawerToggle);
         mDrawerToggle.syncState();
 
         NavigationView navigationView = findViewById(R.id.nav_view);
-
-        if ( navigationView != null ) {
-            pdetect_drawerSwitch = (SwitchCompat) navigationView.getMenu().findItem(R.id.pump_detect_id).getActionView();
-            kucoin_drawerSwitch = (SwitchCompat) navigationView.getMenu().findItem(R.id.use_kucoin_id).getActionView();
+        if (navigationView != null) {
+            View header = navigationView.getHeaderView(0); // tu fullscreenactivity_sidemenu
+            if (header != null) {
+                View sideBar = header.findViewById(R.id.side_bar);
+                if (sideBar != null) {
+                    final int baseTopPadding = sideBar.getPaddingTop();
+                    ViewCompat.setOnApplyWindowInsetsListener(sideBar, (v, insets) -> {
+                        int topInset = insets.getInsets(WindowInsetsCompat.Type.systemBars()).top;
+                        v.setPadding(
+                                v.getPaddingLeft(),
+                                baseTopPadding + topInset,
+                                v.getPaddingRight(),
+                                v.getPaddingBottom()
+                        );
+                        return insets;
+                    });
+                }
+            }
         }
 
+
+        pdetect_drawerSwitch = (SwitchCompat) navigationView.getMenu()
+                .findItem(R.id.pump_detect_id)
+                .getActionView();
+
+        kucoin_drawerSwitch = (SwitchCompat) navigationView.getMenu()
+                .findItem(R.id.use_kucoin_id)
+                .getActionView();
+
         navigationView.setNavigationItemSelectedListener(item -> {
-
-            Intent id;
-
-            switch (item.getItemId()) {
-
-                case R.id.kucoin_key_mn:
-
-                    id = new Intent(this, Menu_Config_Kucoin_Keys.class);
-                    startActivityForResult(id, KEYS_CODE);
-                    overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
-
-                    break;
-
-                case R.id.key_mn:
-
-                    id = new Intent(this, Menu_Config_Keys.class);
-                    startActivityForResult(id, KEYS_CODE);
-                    overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
-
-                    break;
-
-
-                case R.id.wallet_mn:
-
-                    id = new Intent(this, Menu_My_Wallet.class);
-                    startActivity(id);
-                    overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
-                    break;
-
-                case R.id.open_order_mn:
-
-                    id = new Intent(this, Menu_Open_Orders.class);
-                    startActivity(id);
-                    overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
-                    break;
-
-                case R.id.alerts_mn:
-
-                    id = new Intent(this, Menu_Alerts.class);
-                    startActivity(id);
-                    overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
-                    break;
-
-                case R.id.settings_mn:
-
-                    startActivityForResult(new Intent(this, Menu_Preferences.class), PREFS_CODE);
-                    overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
-                    break;
-
-                case R.id.privacyPolicyButton:
-                    id = new Intent(this, PrivacyPolicyActivity.class);
-                    startActivity(id);
-                    overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
-                    break;
-
-                case R.id.Subscribe:
-                    if (!Get_Subscription_Buys(  )) {
-                        Buy_Subscription( this );
-                    }
-                    break;
-
-            }
-
-            mDrawerLayout.closeDrawers();
+            handleDrawerMenuClick(item.getItemId(), drawerLayout);
             return true;
         });
+    }
 
-        if ( pdetect_drawerSwitch != null ) {
+    private void handleDrawerMenuClick(int itemId, DrawerLayout drawerLayout) {
+
+
+        if (itemId == R.id.kucoin_key_mn) {
+            keysLauncher.launch(new Intent(this, Menu_Config_Kucoin_Keys.class));
+            overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+
+        } else if (itemId == R.id.key_mn) {
+            keysLauncher.launch(new Intent(this, Menu_Config_Keys.class));
+            overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+
+        } else if (itemId == R.id.wallet_mn) {
+            Intent id = new Intent(this, Menu_My_Wallet.class);
+            startActivity(id);
+            overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+
+        } else if (itemId == R.id.open_order_mn) {
+            Intent id = new Intent(this, Menu_Open_Orders.class);
+            startActivity(id);
+            overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+
+        } else if (itemId == R.id.alerts_mn) {
+            Intent id = new Intent(this, Menu_Alerts.class);
+            startActivity(id);
+            overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+
+        } else if (itemId == R.id.settings_mn) {
+            prefsLauncher.launch(new Intent(this, Menu_Preferences.class));
+            overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+
+        } else if (itemId == R.id.privacyPolicyButton) {
+            Intent id = new Intent(this, PrivacyPolicyActivity.class);
+            startActivity(id);
+            overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+
+        } else if (itemId == R.id.Subscribe) {
+            if (!Get_Subscription_Buys()) {
+                Buy_Subscription(this); // o Buy_Subscription() si lo cambiaste
+            }
+        }
+
+        drawerLayout.closeDrawers();
+    }
+
+    private void setupDrawerSwitches() {
+        if (pdetect_drawerSwitch != null) {
+            pdetect_drawerSwitch.setChecked(Config_Data.enable_pump_detection);
             pdetect_drawerSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                if (isChecked) {
-                    Enable_Pump_Detection(true, false);
-                } else {
-                    Enable_Pump_Detection(false, false);
-                }
+                Enable_Pump_Detection(isChecked, false);
                 Save_Config_Data();
             });
         }
 
-        MyDebug("Stating application...", "OnCreate mode.. ");
-
-        Show_Connection_Status(false);
-
-        Load_Config_Data ( ) ;
-        Load_Alerts      ( ) ;
-
-//        SwitchCompat KuCoindrawerSwitch = (SwitchCompat) navigationView.getMenu().findItem(R.id.use_kucoin_id).getActionView();
-        if ( kucoin_drawerSwitch != null ) {
+        if (kucoin_drawerSwitch != null) {
             kucoin_drawerSwitch.setChecked(Use_KuCoin);
             kucoin_drawerSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-
                 Save_Alerts();
                 Save_Favourites();
                 Enable_KuCoin(isChecked);
@@ -499,21 +568,30 @@ public class FullscreenActivity extends AppCompatActivity implements PurchasesUp
                 ReStart_Fragments();
             });
         }
+    }
 
-        LocalBroadcastManager.getInstance(this).registerReceiver(tempReceiver, new IntentFilter("data_between_activities"));
+    private void setupBroadcasts() {
+        LocalBroadcastManager.getInstance(this)
+                .registerReceiver(tempReceiver, new IntentFilter("data_between_activities"));
+    }
 
+    private void initAppStateAndData() {
+        Load_Config_Data();
+        Load_Alerts();
         Max_Buy_Times = 0;
+    }
 
+    private void initServicesAndWorkflows() {
         Connect_Billing();
-
         Register_All_Notification_Channels();
 
-        Load_Exchange_Keys ( ) ;
-        Begin_Binance_Work ( ) ;
-        Start_Fragments    ( ) ;
-        Start_Timer        ( ) ;
-
+        Load_Exchange_Keys();
+        Begin_Binance_Work();
+        Start_Fragments();
+        Start_Timer();
     }
+
+
 
     private void Start_Timer ( )
     {
@@ -709,7 +787,7 @@ public class FullscreenActivity extends AppCompatActivity implements PurchasesUp
             MyDebug( "Connection" , "Update Data Failed. ");
             Show_Connection_Status(false );
             return;
-        } else if ( CList_Data.size() == 0 )
+        } else if (CList_Data.isEmpty())
         {
             Show_Connection_Status(false );
             return;
@@ -817,27 +895,10 @@ public class FullscreenActivity extends AppCompatActivity implements PurchasesUp
     }
 
     @Override
-    public void onBackPressed() {
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
-    }
-
-    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == PREFS_CODE || requestCode == KEYS_CODE)
-        {
-            Save_Config_Data();
-            if ( Alls_Fragment != null )
-            {
-                Alls_Fragment.Show_All_Coins ( ) ;
-            }
-        } else if (requestCode == COIN_CODE) {
+        if (requestCode == COIN_CODE) {
             Save_Config_Data();
             if ( Favs_Fragment != null )
             {
@@ -948,6 +1009,13 @@ public class FullscreenActivity extends AppCompatActivity implements PurchasesUp
 
     @Override
     public void onDestroy() {
+
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(tempReceiver);
+
+        if (backgroundExecutor != null) {
+            backgroundExecutor.shutdownNow();
+        }
+
         super.onDestroy();
 
         NotificationManager notificationManager;
@@ -1007,12 +1075,7 @@ public class FullscreenActivity extends AppCompatActivity implements PurchasesUp
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-
-        getMenuInflater().inflate(R.menu.activity_main_drawer, menu);
-
-        MenuCompat.setGroupDividerEnabled(menu, true);
-
-        return true;
+        return ( false ) ;
     }
 
     @Override
@@ -1044,7 +1107,7 @@ public class FullscreenActivity extends AppCompatActivity implements PurchasesUp
             return;
 
 
-        if (Config_Data.Coin_Names.indexOf(CoinName) < 0) {
+        if (!Config_Data.Coin_Names.contains(CoinName)) {
             Config_Data.Coin_Names.add(CoinName);
         }
     }
@@ -1075,7 +1138,7 @@ public class FullscreenActivity extends AppCompatActivity implements PurchasesUp
             Add_Coin_Name(dta);
         }
 
-        if (Config_Data.Coin_Names.size() == 0) {
+        if (Config_Data.Coin_Names.isEmpty()) {
             Config_Data.Coin_Names.add("BTC-USDT");
         }
 
@@ -1094,7 +1157,7 @@ public class FullscreenActivity extends AppCompatActivity implements PurchasesUp
             Add_Coin_Name(dta);
         }
 
-        if (Config_Data.Coin_Names.size() == 0) {
+        if (Config_Data.Coin_Names.isEmpty()) {
             Config_Data.Coin_Names.add("BTCUSDT");
         }
     }
@@ -1159,9 +1222,9 @@ public class FullscreenActivity extends AppCompatActivity implements PurchasesUp
         Config_Data.Config_Keys.Kucoin_passPhrase  = settings.getString("Kucoin_PassPhrase", "");
 
 /*
-        Config_Data.Config_Keys.Kucoin_Public_Key =  "1ca3cfbf-1394-4d11-9ebc-f6314c5c1fe6";
-        Config_Data.Config_Keys.Kucoin_Private_Key  =  "60468858de3a710006d74619";
-        Config_Data.Config_Keys.Kucoin_passPhrase  ="javi1313";
+        Config_Data.Config_Keys.Kucoin_Public_Key =  "80bf0ef8-3544-4aa6-ae7d-632cbb02f274";
+        Config_Data.Config_Keys.Kucoin_Private_Key  =  "685c656172e66f0001bc9f6d";
+        Config_Data.Config_Keys.Kucoin_passPhrase  ="13131313";
 */
 
         Config_Data.Min_Volume_Pump = settings.getString("Min_Volume_Pump", "100000");
@@ -1200,8 +1263,6 @@ public class FullscreenActivity extends AppCompatActivity implements PurchasesUp
 
         Load_Favourites();
 
-        Enable_Pump_Detection(Config_Data.enable_pump_detection, true);
-
     }
 
     private void Load_Binance_Alerts ()
@@ -1218,16 +1279,13 @@ public class FullscreenActivity extends AppCompatActivity implements PurchasesUp
 
             dta.Label = settings.getString("Alert_Coin_Name" + i, "");
 
-            if ( dta.Label!= null )
-            {
-                dta.Alert_Price = settings.getString("Alert_Price" + i, "");
-                dta.WhengoesUp = settings.getBoolean("Alert_WhengoesUp" + i, true);
-                dta.repeat = settings.getBoolean("Alert_Repeat" + i, false );
+            dta.Alert_Price = settings.getString("Alert_Price" + i, "");
+            dta.WhengoesUp = settings.getBoolean("Alert_WhengoesUp" + i, true);
+            dta.repeat = settings.getBoolean("Alert_Repeat" + i, false );
 
-                Alerts_List.add( dta ) ;
+            Alerts_List.add( dta ) ;
 
-                MyDebug( "Alerts" , "Add Alert for " + dta.Label + " - Price: " + dta.Alert_Price + " - Up:" + dta.WhengoesUp );
-            }
+            MyDebug( "Alerts" , "Add Alert for " + dta.Label + " - Price: " + dta.Alert_Price + " - Up:" + dta.WhengoesUp );
         }
     }
 
@@ -1470,10 +1528,7 @@ public class FullscreenActivity extends AppCompatActivity implements PurchasesUp
             pr1 = new BigDecimal(Alert_Price);
             pr2 = new BigDecimal(Current_Price);
 
-            if (pr1.compareTo(pr2) > 0)
-                Alr.WhengoesUp = true;
-            else
-                Alr.WhengoesUp = false;
+            Alr.WhengoesUp = pr1.compareTo(pr2) > 0;
 
             Alr.repeat = Repeat;
 
@@ -2192,8 +2247,7 @@ public class FullscreenActivity extends AppCompatActivity implements PurchasesUp
                     Update_List_Data_Price(response.getData().getData().getSymbol(),
                                             response.getData().getData().getLastTradedPrice().toString(),
                                             response.getData().getData().getChangeRate().multiply( java.math.BigDecimal.valueOf(100)) .toString(),
-                                            response.getData().getData().getVol().toString(), Need_Check_Pump() , response.getData().getData().getDatetime());
-
+                                            response.getData().getData().getVolValue().toString(), Need_Check_Pump() , response.getData().getData().getDatetime());
 
                     First_Time_Connect = false ;
                     if ( ( last_kucoin_update + 1 ) < (int)( SystemClock.uptimeMillis()/1000 ) ) //update each  second.
@@ -2212,6 +2266,7 @@ public class FullscreenActivity extends AppCompatActivity implements PurchasesUp
                     }
 //                  Show_Connection_Status(true );
                 } , "USDS,BTC,ALTS" );
+
 
 
 
@@ -3242,7 +3297,7 @@ public class FullscreenActivity extends AppCompatActivity implements PurchasesUp
                         TickerStatistics TS = new TickerStatistics();
 
                         TS.setSymbol(LMR.get(idx).getSymbol());
-                        TS.setVolume(Process_BigDecimal(LMR.get(idx).getVol()).toString());
+                        TS.setVolume(Process_BigDecimal(LMR.get(idx).getVolValue()).toString());
                         TS.setLastPrice(Process_BigDecimal(LMR.get(idx).getLast()).toString());
                         TS.setAskPrice(Process_BigDecimal(LMR.get(idx).getBuy()).toString());
 
@@ -3554,7 +3609,7 @@ public class FullscreenActivity extends AppCompatActivity implements PurchasesUp
         return ( Final_Qty.toString()) ;
     }
 
-    static public void Sell_Limit(final String Coin, final String Price, final String Qty)
+    public static void Sell_Limit(final String Coin, final String Price, final String Qty)
     {
         MyDebug ( "Selling... " , Coin + " [" + Price + "][" + Qty + "]") ;
 
@@ -3569,7 +3624,8 @@ public class FullscreenActivity extends AppCompatActivity implements PurchasesUp
 
         MyDebug ( "Create Order" , "Price: " + Final_Price +  " - Qty: " + Final_Qty ) ;
 
-        new Buy_Async_Mode ( 2 ,  Coin , "" , Final_Qty.toString() ,  Final_Price.toString() ).execute();;
+        runBuyAsyncMode(2, Coin, "" , Final_Qty.toString() ,  Final_Price.toString()  );
+
     }
     private static String Get_Percent_Stop_Loss_Sell() {
         return (Config_Data.Percent_From_Sell_Stop_Loss);
@@ -3594,7 +3650,7 @@ public class FullscreenActivity extends AppCompatActivity implements PurchasesUp
         Stop_Price  = new BigDecimal( Round_Price_Number ( Coin , Stop_Price.toString())) ;
         Final_Price = new BigDecimal( Round_Price_Number ( Coin , Final_Price.toString())) ;
 
-        new Buy_Async_Mode ( 1 ,  Coin , Stop_Price.toString() , Final_Qty.toString() ,  Final_Price.toString()).execute();;
+        runBuyAsyncMode(1, Coin, Stop_Price.toString() , Final_Qty.toString() ,  Final_Price.toString()  );
 
     }
 
@@ -3618,7 +3674,7 @@ public class FullscreenActivity extends AppCompatActivity implements PurchasesUp
 
         MyDebug ( "Buy.." , "Coin: "+  Coin + " - Price: " + Final_Price.toString() + " - Amount: " + Btc_amount + " - Qty: " + Final_Qty.toString() ) ;
 
-        new Buy_Async_Mode ( 0 ,  Coin , "" , Final_Qty.toString() ,  Final_Price.toString()).execute();;
+        runBuyAsyncMode(0, Coin, "" , Final_Qty.toString() ,  Final_Price.toString()  );
 
     }
 
@@ -3663,17 +3719,20 @@ public class FullscreenActivity extends AppCompatActivity implements PurchasesUp
 
     public void Register_Alerts_Pump_Channel() {
 
-        NotificationManager notificationManager;
+            NotificationManager notificationManager =
+                    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-        notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (notificationManager == null) return;
 
-            NotificationChannel channel = new NotificationChannel(Get_Alerts_Channel_ID(),
-                    "Price Alerts.",
-                    NotificationManager.IMPORTANCE_HIGH);
+            NotificationChannel channel = new NotificationChannel(
+                    Get_Alerts_Channel_ID(),
+                    "Price Alerts",
+                    NotificationManager.IMPORTANCE_HIGH
+            );
+
+            channel.setDescription("Alerts when a pump or price target is detected");
 
             notificationManager.createNotificationChannel(channel);
-        }
     }
 
     @Override
@@ -3804,141 +3863,173 @@ public class FullscreenActivity extends AppCompatActivity implements PurchasesUp
     private void Connect_Billing()
     {
 
-        MyDebug( "Subscription" , "Connecting to Billing service.." ) ;
+        MyDebug("Subscription", "Connecting to Billing service...");
 
         Init_Subscriptions();
 
-        billingClient = BillingClient.newBuilder(this).setListener(this).enablePendingPurchases().build();
+        if (billingClient != null && billingClient.isReady()) {
+            MyDebug("Subscription", "BillingClient already connected.");
+            Check_Subscriptions();
+            return;
+        }
+
+        billingClient = BillingClient.newBuilder(this)
+                .setListener(this)
+                .enablePendingPurchases(
+                        PendingPurchasesParams.newBuilder()
+                                .enableOneTimeProducts()
+                                .build()
+                )
+                .build();
+
         billingClient.startConnection(new BillingClientStateListener() {
             @Override
             public void onBillingSetupFinished(BillingResult billingResult) {
-                if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK)
-                {
+                int responseCode = billingResult.getResponseCode();
+                String debugMessage = billingResult.getDebugMessage();
 
-                    MyDebug( "Subscription" , "Connected OK." ) ;
-
-                    Check_Subscriptions ( ) ;
-
-                    // The BillingClient is ready. You can query purchases here.
-                } else if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.USER_CANCELED)
-                {
-                    MyDebug( "Subscription" , "Connected USER_CANCELED." ) ;
-
+                if (responseCode == BillingClient.BillingResponseCode.OK) {
+                    MyDebug("Subscription", "Connected OK. " + debugMessage);
+                    Check_Subscriptions();
+                } else if (responseCode == BillingClient.BillingResponseCode.USER_CANCELED) {
+                    MyDebug("Subscription", "User canceled billing setup. " + debugMessage);
                 } else {
-                    MyDebug( "Subscription" , "Connected error [" + billingResult.getDebugMessage() + "]" ) ;
+                    MyDebug("Subscription", "Billing setup error [" + responseCode + "]: " + debugMessage);
                 }
             }
 
             @Override
-            public void onBillingServiceDisconnected()
-            {
-                MyDebug( "Subscription" , "Lost Billing connection." ) ;
+            public void onBillingServiceDisconnected() {
+                MyDebug("Subscription", "Lost Billing connection. Retrying in 3 seconds...");
+                new Handler(Looper.getMainLooper()).postDelayed(() -> Connect_Billing(), 3000);
             }
         });
     }
-
     private void Check_Subscriptions ( )
     {
         Get_Subscription_Availables();
         Get_Subscription_Enabled();
     }
 
-    private void Get_Subscription_Enabled()
-    {
-        MyDebug( "Subscription" , "Checking Subscritions enabled....");
+    private void Get_Subscription_Enabled() {
+        MyDebug("Subscription", "Checking Subscriptions enabled...");
 
-        final Purchase.PurchasesResult result = billingClient.queryPurchases(BillingClient.SkuType.SUBS);
+        QueryPurchasesParams queryPurchasesParams =
+                QueryPurchasesParams.newBuilder()
+                        .setProductType(BillingClient.ProductType.SUBS)
+                        .build();
 
-        final List<Purchase> purchases = result.getPurchasesList();
+        billingClient.queryPurchasesAsync(queryPurchasesParams, (billingResult, purchasesList) -> {
+            BUY_SELL_SUBSCRIPTION = false;
 
-        BUY_SELL_SUBSCRIPTION = false  ;
-        if (purchases != null)
-        {
-            MyDebug( "Subscription" , "Checking Subscritions enabled [" + purchases.size() + "]");
-            for (Purchase purchase : purchases)
-            {
-                MyDebug( "Subscription" , "Subscription enabled for [" + purchase.getPackageName() + "]");
-
-                handlePurchase(purchase);
+            if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK && purchasesList != null) {
+                MyDebug("Subscription", "Checking Subscriptions enabled [" + purchasesList.size() + "]");
+                for (Purchase purchase : purchasesList) {
+                    MyDebug("Subscription", "Subscription enabled for purchase token: " + purchase.getPurchaseToken());
+                    handlePurchase(purchase);
+                }
+            } else {
+                MyDebug("Subscription", "Error checking subscriptions: " + billingResult.getDebugMessage());
             }
+
+            if (!BUY_SELL_SUBSCRIPTION) {
+                Enable_Subscription_Buys(false);
+            }
+        });
+    }
+
+
+
+// ...
+
+    // Antes: private SkuDetails SKUDetails_Compras;
+
+    private void Get_Subscription_Availables() {
+
+        MyDebug("Subscription", "Checking Subscriptions state");
+
+        if (billingClient == null) return;
+        if (!billingClient.isReady()) return;
+
+        SKUDetails_Compras = null;
+
+        QueryProductDetailsParams.Product product =
+                QueryProductDetailsParams.Product.newBuilder()
+                        .setProductId(Compras_SKU)
+                        .setProductType(BillingClient.ProductType.SUBS)
+                        .build();
+
+        QueryProductDetailsParams params =
+                QueryProductDetailsParams.newBuilder()
+                        .setProductList(Collections.singletonList(product))
+                        .build();
+
+        billingClient.queryProductDetailsAsync(params, (billingResult, queryProductDetailsResult) -> {
+
+            MyDebug("Subscription", "Got Subscription List [" + billingResult.getDebugMessage() + "]");
+
+            if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK
+                    && queryProductDetailsResult != null
+                    && queryProductDetailsResult.getProductDetailsList() != null) {
+
+                List<ProductDetails> productDetailsList = queryProductDetailsResult.getProductDetailsList();
+
+                MyDebug("Subscription", "Got Subscription items [" + productDetailsList.size() + "]");
+
+                for (ProductDetails productDetails : productDetailsList) {
+                    String productId = productDetails.getProductId();
+
+                    MyDebug("Subscription", "Checking Subscription item [" +
+                            productDetails.getTitle() + "][" + productId + "]");
+
+                    if (Compras_SKU.equals(productId)) {
+                        SKUDetails_Compras = productDetails;
+                        break;
+                    }
+                }
+
+            } else {
+                MyDebug("Subscription", "Error Subscription List [" + billingResult.getDebugMessage() + "]");
+            }
+        });
+    }
+
+    public static void Buy_Subscription(Activity Act) {
+        MyDebug("Subscription", "Trying to buy new subscription....");
+
+        if (!billingClient.isReady() || SKUDetails_Compras == null) {
+            MyDebug("Subscription", "Trying follow Flow Params. BillingClient not ready.");
+            return;
         }
 
-        if ( !BUY_SELL_SUBSCRIPTION )
-            Enable_Subscription_Buys ( false ) ;
+        MyDebug("Subscription", "Trying follow Flow Params. [" + SKUDetails_Compras.getTitle() + "]");
 
-    }
+        // En suscripciones hay que elegir una oferta/base plan (offerToken)
+        if (SKUDetails_Compras.getSubscriptionOfferDetails() == null ||
+                SKUDetails_Compras.getSubscriptionOfferDetails().isEmpty()) {
+            MyDebug("Subscription", "No subscription offers found for product.");
+            return;
+        }
 
-    private void Get_Subscription_Availables()
-    {
+        // Cogemos la primera oferta disponible (luego puedes filtrar la que quieras)
+        ProductDetails.SubscriptionOfferDetails offerDetails =
+                SKUDetails_Compras.getSubscriptionOfferDetails().get(0);
 
-        MyDebug( "Subscription" , "Checking Subscritions state");
+        String offerToken = offerDetails.getOfferToken();
 
-        if ( billingClient == null )
-            return ;
+        BillingFlowParams.ProductDetailsParams productDetailsParams =
+                BillingFlowParams.ProductDetailsParams.newBuilder()
+                        .setProductDetails(SKUDetails_Compras)
+                        .setOfferToken(offerToken)
+                        .build();
 
-        if ( ! billingClient.isReady()  )
-            return ;
+        BillingFlowParams flowParams = BillingFlowParams.newBuilder()
+                .setProductDetailsParamsList(Collections.singletonList(productDetailsParams))
+                .build();
 
-        SKUDetails_Compras = null ;
+        BillingResult result = billingClient.launchBillingFlow(Act, flowParams);
 
-        List<String> skuList = new ArrayList<>();
-
-        skuList.add(Compras_SKU);
-
-        SkuDetailsParams.Builder params = SkuDetailsParams.newBuilder();
-        params.setSkusList(skuList).setType(BillingClient.SkuType.SUBS);
-
-        billingClient.querySkuDetailsAsync(params.build(),
-                new SkuDetailsResponseListener() {
-                    @Override
-                    public void onSkuDetailsResponse(BillingResult billingResult,
-                                                     List<SkuDetails> skuDetailsList) {
-
-                        MyDebug( "Subscription" , "Got Subscription List [" + billingResult.getDebugMessage() + "]");
-
-                        if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK && skuDetailsList != null)
-                        {
-
-                            MyDebug( "Subscription" , "Got Subscription items [" + skuDetailsList.size()  + "]");
-
-                            for (SkuDetails skuDetails : skuDetailsList)
-                            {
-                                String sku = skuDetails.getSku();
-
-                                MyDebug( "Subscription" , "Checking Subscription item [" + skuDetails.getTitle()  + "]" + "[" + sku + "]" ) ;
-
-                                if (Compras_SKU.equals(sku))
-                                {
-                                    SKUDetails_Compras = skuDetails;
-                                }
-                            }
-                        } else
-                        {
-                            MyDebug( "Subscription" , "Error Subscription List [" + billingResult.getDebugMessage() + "]");
-                        }
-
-                        // Process the result.
-                    }
-                });
-    }
-
-    public static void Buy_Subscription( Activity Act )
-    {
-            MyDebug( "Subscription" , "Trying to buy new subscription....");
-
-            if ( ! billingClient.isReady()  || SKUDetails_Compras == null )
-            {
-                MyDebug( "Subscription" , "Trying follow Flow Params.  BillingClient not ready.");
-                return;
-            }
-
-            MyDebug( "Subscription" , "Trying follow Flow Params. [" + SKUDetails_Compras.getTitle() + "]");
-
-            BillingFlowParams flowParams = BillingFlowParams.newBuilder()
-                    .setSkuDetails(SKUDetails_Compras)
-                    .build();
-
-            billingClient.launchBillingFlow( Act , flowParams);
+        MyDebug("Subscription", "launchBillingFlow result: " + result.getDebugMessage());
     }
 
     public static boolean Max_Buy_Reached ( )
@@ -3957,191 +4048,142 @@ public class FullscreenActivity extends AppCompatActivity implements PurchasesUp
         ++ Max_Buy_Times ;
     }
 
+    private static void runBuyAsyncMode(int mode, String coinName, String sPrice, String qty, String price) {
+        final int buyMode = mode;
+        final String coin = coinName;
+        final String finalQty = qty;
+        final String finalPrice = price;
+        final String stopPrice = sPrice;
 
-    private static class Buy_Async_Mode extends AsyncTask<Void, Integer, Boolean>
-    {
-        String Coin ;
-        String Final_Qty ;
-        String Final_Price ;
-        String Stop_Price ;
-        int Buy_Mode ;
+        backgroundExecutor.execute(() -> {
+            boolean ok = true;
+            String errorPrefix = null;
+            Exception error = null;
 
-        private Buy_Async_Mode( int Mode , String CoinName , String SPrice , String Qty , String Price )
-        {
-            Buy_Mode = Mode ;
+            try {
+                if (buyMode == 0) {
+                    MyDebug("Buying", coin + "  Price [" + finalPrice + "]  Qty_Items [" + finalQty + "]");
 
-            Coin = CoinName ;
-            Final_Qty = Qty ;
-            Final_Price = Price ;
-            Stop_Price = SPrice ;
-        }
-
-        @Override
-        protected void onPreExecute()
-        {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected Boolean doInBackground(Void... arg0)
-        {
-            if ( Buy_Mode == 0)
-            {
-                MyDebug("Buying", Coin + "  Price [" + Final_Price + "]  Qty_Items [" + Final_Qty + "]");
-
-                try {
-
-                    if (!Use_KuCoin)
-                    {
-                        client.newOrder(NewOrder.limitBuy(Coin, TimeInForce.GTC, Final_Qty , Final_Price ));
-                    }
-                    else {
+                    if (!Use_KuCoin) {
+                        client.newOrder(NewOrder.limitBuy(coin, TimeInForce.GTC, finalQty, finalPrice));
+                    } else {
                         OrderCreateApiRequest request = OrderCreateApiRequest.builder()
-                                .price(new java.math.BigDecimal(Final_Price.toString()))
-                                .size(new java.math.BigDecimal(Final_Qty.toString()))
+                                .price(new java.math.BigDecimal(finalPrice))
+                                .size(new java.math.BigDecimal(finalQty))
                                 .side("buy")
-                                .symbol(Coin)
+                                .symbol(coin)
                                 .type("limit")
                                 .tradeType("TRADE")
-                                .clientOid(UUID.randomUUID().toString()).build();
+                                .clientOid(UUID.randomUUID().toString())
+                                .build();
 
-                        OrderCreateResponse CR = kucoinRestClient.orderAPI().createOrder(request);
-                        MyDebug("Create Order", "Result: " + CR.toString());
+                        OrderCreateResponse cr = kucoinRestClient.orderAPI().createOrder(request);
+                        MyDebug("Create Order", "Result: " + cr.toString());
                     }
 
-                } catch ( Exception e)
-                {
-                     My_Toast_Filtered("Buy Orders: ", e);
-                     MyDebug("Connection", "Buy Orders: " + e.getMessage());
-                }
-            }
-            else if ( Buy_Mode == 1)
-            {
-                MyDebug("Selling", Coin + " [" + Final_Price + "][" + Stop_Price + "][" + Final_Qty + "]");
+                } else if (buyMode == 1) {
+                    MyDebug("Selling", coin + " [" + finalPrice + "][" + stopPrice + "][" + finalQty + "]");
 
-                try {
-                    if (!Use_KuCoin)
-                    {
-                        NewOrder order = new NewOrder(Coin, OrderSide.SELL, OrderType.STOP_LOSS_LIMIT, TimeInForce.GTC, Final_Qty, Final_Price);
-                        client.newOrder(order.stopPrice(Stop_Price));
-
+                    if (!Use_KuCoin) {
+                        NewOrder order = new NewOrder(
+                                coin, OrderSide.SELL, OrderType.STOP_LOSS_LIMIT, TimeInForce.GTC, finalQty, finalPrice
+                        );
+                        client.newOrder(order.stopPrice(stopPrice));
                     } else {
-
                         OrderCreateApiRequest request = OrderCreateApiRequest.builder()
-                                .price(new java.math.BigDecimal(Final_Price))
-                                .size(new java.math.BigDecimal(Final_Qty))
-                                .stopPrice(new java.math.BigDecimal(Stop_Price))
+                                .price(new java.math.BigDecimal(finalPrice))
+                                .size(new java.math.BigDecimal(finalQty))
+                                .stopPrice(new java.math.BigDecimal(stopPrice))
                                 .side("sell")
-                                .symbol(Coin)
+                                .symbol(coin)
                                 .type("limit")
                                 .stop("loss")
                                 .tradeType("TRADE")
-                                .clientOid(UUID.randomUUID().toString()).build();
+                                .clientOid(UUID.randomUUID().toString())
+                                .build();
 
-                        OrderCreateResponse CR = kucoinRestClient.orderAPI().createOrder(request);
-
-                        MyDebug("Create Order", "Result: " + CR.toString() + " - Price: " + Final_Price + " - Qty: " + Final_Qty);
-
+                        OrderCreateResponse cr = kucoinRestClient.orderAPI().createOrder(request);
+                        MyDebug("Create Order", "Result: " + cr.toString() + " - Price: " + finalPrice + " - Qty: " + finalQty);
                     }
-                }
-                catch ( Exception e )
-                {
-                    My_Toast_Filtered("Sell Orders: ", e);
-                    MyDebug("Connection", "Sell Orders: " + e.getMessage());
-                }
-            }
-            else if ( Buy_Mode == 2)
-            {
-                MyDebug("Selling", Coin + " [" + Final_Price + "][" + Final_Qty + "]");
 
-                try {
+                } else if (buyMode == 2) {
+                    MyDebug("Selling", coin + " [" + finalPrice + "][" + finalQty + "]");
+
                     if (!Use_KuCoin) {
-                        client.newOrder(NewOrder.limitSell(Coin, TimeInForce.GTC, Final_Qty, Final_Price));
+                        client.newOrder(NewOrder.limitSell(coin, TimeInForce.GTC, finalQty, finalPrice));
                     } else {
                         OrderCreateApiRequest request = OrderCreateApiRequest.builder()
-                                .price(new java.math.BigDecimal(Final_Price))
-                                .size(new java.math.BigDecimal(Final_Qty))
+                                .price(new java.math.BigDecimal(finalPrice))
+                                .size(new java.math.BigDecimal(finalQty))
                                 .side("sell")
-                                .symbol(Coin)
+                                .symbol(coin)
                                 .type("limit")
                                 .tradeType("TRADE")
-                                .clientOid(UUID.randomUUID().toString()).build();
+                                .clientOid(UUID.randomUUID().toString())
+                                .build();
 
-                        OrderCreateResponse CR = kucoinRestClient.orderAPI().createOrder(request);
-
-                        MyDebug("Create Order", "Result: " + CR.toString() + " - Price: " + Final_Price + " - Qty: " + Final_Qty);
-
+                        OrderCreateResponse cr = kucoinRestClient.orderAPI().createOrder(request);
+                        MyDebug("Create Order", "Result: " + cr.toString() + " - Price: " + finalPrice + " - Qty: " + finalQty);
                     }
                 }
-                catch ( Exception e )
-                {
-                    My_Toast_Filtered("Sell Orders: ", e);
+
+            } catch (Exception e) {
+                ok = false;
+                error = e;
+
+                if (buyMode == 0) {
+                    errorPrefix = "Buy Orders: ";
+                    MyDebug("Connection", "Buy Orders: " + e.getMessage());
+                } else {
+                    errorPrefix = "Sell Orders: ";
                     MyDebug("Connection", "Sell Orders: " + e.getMessage());
                 }
             }
 
-            return ( true ) ;
-        }
+            final boolean resultOk = ok;
+            final Exception finalError = error;
+            final String finalErrorPrefix = errorPrefix;
 
-        @Override
-        protected void onProgressUpdate(Integer... values)
-        {
-            super.onProgressUpdate(values);
+            mainHandler.post(() -> {
+                // Aquí va lo que antes harías en onPostExecute()
+                // (ahora mismo no hacías nada)
 
-        }
-
-        @Override
-        protected void onPostExecute(Boolean result)
-        {
-            super.onPostExecute(result);
-        }
+                // Toast/UI SIEMPRE en main thread
+                if (!resultOk && finalError != null && finalErrorPrefix != null) {
+                    My_Toast_Filtered(finalErrorPrefix, finalError);
+                }
+            });
+        });
     }
 
-    private class Restart_App_Async_Mode extends AsyncTask<Void, Integer, Boolean>
-    {
-        private Restart_App_Async_Mode(  )
-        {
-        }
+    private void restartAppAsyncMode() {
+        Set_Spinner(View.VISIBLE);
 
-        @Override
-        protected void onPreExecute()
-        {
-            super.onPreExecute();
+        backgroundExecutor.execute(() -> {
+            boolean result = true;
 
-            Set_Spinner ( View.VISIBLE  ) ;
-        }
+            try {
+                Close_User_Data_Websocket();
+                Close_User_Data_Stream();
+                Close_Ticket_Data_Websocket();
 
-        @Override
-        protected Boolean doInBackground(Void... arg0)
-        {
-            Close_User_Data_Websocket   ( );
-            Close_User_Data_Stream      ( );
-            Close_Ticket_Data_Websocket ( );
+                Load_Exchange_Keys();
+                Begin_Binance_Work();
+            } catch (Exception e) {
+                result = false;
+                MyDebug("Restart", "Error restarting app async: " + e.getMessage());
+            }
 
-            Load_Exchange_Keys ( ) ;
-            Begin_Binance_Work ( ) ;
+            boolean finalResult = result;
+            mainHandler.post(() -> {
+                if (finalResult) {
+                    Start_Fragments();
+                    Start_Timer();
+                }
 
-            return ( true ) ;
-        }
-
-        @Override
-        protected void onProgressUpdate(Integer... values)
-        {
-
-            super.onProgressUpdate(values);
-
-        }
-
-        @Override
-        protected void onPostExecute(Boolean result)
-        {
-            super.onPostExecute(result);
-
-            Start_Fragments    ( ) ;
-            Start_Timer        ( ) ;
-
-            Set_Spinner ( View.GONE  ) ;
-        }
+                Set_Spinner(View.GONE);
+            });
+        });
     }
 
     public void ReStart_Fragments()
@@ -4149,7 +4191,7 @@ public class FullscreenActivity extends AppCompatActivity implements PurchasesUp
         if (Update_Data_Timer != null)
             Update_Data_Timer.cancel();
 
-        new Restart_App_Async_Mode ( ).execute();;
+        restartAppAsyncMode();
     }
 
     public void Start_Fragments()
@@ -4236,7 +4278,8 @@ public class FullscreenActivity extends AppCompatActivity implements PurchasesUp
     public static String Get_Base_Volume ( String Coin_Volume , String Coin_Price )
     {
 
-        String Base_Vol =  new BigDecimal( Coin_Volume).multiply( new BigDecimal( Coin_Price )).toString() ;
+//        String Base_Vol =  new BigDecimal( Coin_Volume).multiply( new BigDecimal( Coin_Price )).toString() ;
+        String Base_Vol =  Coin_Volume ;
 
         NumberFormat nf_out = NumberFormat.getNumberInstance(Locale.getDefault());
         nf_out.setMaximumFractionDigits(2);

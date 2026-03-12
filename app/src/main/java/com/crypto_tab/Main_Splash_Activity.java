@@ -6,7 +6,7 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class Main_Splash_Activity extends AppCompatActivity {
+public class SplashActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,7 +17,7 @@ public class Main_Splash_Activity extends AppCompatActivity {
         getWindow().setNavigationBarColor(Color.BLACK);
 
 
-        Intent intent = new Intent(this, FullscreenActivity.class);
+        Intent intent = new Intent(this, MarketOverviewActivity.class);
         startActivity(intent);
         finish();
 

@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
@@ -65,7 +66,6 @@
 
     </PreferenceCategory>
 
-
     <PreferenceCategory
         android:enabled="true"
         android:title="Notifications">
@@ -93,6 +93,7 @@
             android:key="notif_sent"
             android:singleLineTitle="false"
             android:title="Show when order is sent" />
+
         <SwitchPreference
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -101,6 +102,7 @@
             android:key="notif_cancel"
             android:singleLineTitle="false"
             android:title="Show when order is cancelled" />
+
         <SwitchPreference
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -109,6 +111,7 @@
             android:key="notif_part"
             android:singleLineTitle="false"
             android:title="Show when order is partially filled" />
+
         <SwitchPreference
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -125,7 +128,7 @@
             android:icon="@drawable/notif"
             android:key="sound_pump_id"
             android:title="Notification options"
-            app:summary="Sound to play when a pump has been detected"/>
+            app:summary="Sound to play when a pump has been detected" />
 
         <SwitchPreference
             android:icon="@drawable/flecha"
@@ -181,7 +184,7 @@
             android:entryValues="@array/price_amount"
             android:icon="@drawable/chart"
             android:key="min_price"
-            android:title="Ignore coins with price lower than" />"
+            android:title="Ignore coins with price lower than" />
 
         <ListPreference
             android:layout_width="wrap_content"
@@ -191,6 +194,8 @@
             android:entryValues="@array/Volume_Amount"
             android:icon="@drawable/chart"
             android:key="vol_amount"
-            android:title="Ignore coins with volume lower than" />"
+            android:title="Ignore coins with volume lower than" />
+
     </PreferenceCategory>
+
 </PreferenceScreen>

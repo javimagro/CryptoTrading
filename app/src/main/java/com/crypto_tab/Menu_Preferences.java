@@ -6,6 +6,7 @@ import android.provider.Settings;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.WindowCompat;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
@@ -19,6 +20,8 @@ public class Menu_Preferences extends AppCompatActivity
         protected void onCreate(Bundle savedInstanceState)
         {
             super.onCreate(savedInstanceState);
+
+            WindowCompat.setDecorFitsSystemWindows(getWindow(), true);
 
             ContextCompat.getColor(getApplicationContext(), android.R.color.background_dark) ;
 

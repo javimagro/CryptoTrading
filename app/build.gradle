@@ -1,25 +1,34 @@
 apply plugin: 'com.android.application'
 
 android {
+    // API actual objetivo (ajusta si tu AGP no soporta 36 todavía)
+    compileSdkVersion 36
+    packagingOptions {
+        resources {
+            excludes += ['META-INF/versions/9/OSGI-INF/MANIFEST.MF']
+        }
+    }
+
+
     signingConfigs {
         release {
             storeFile file(var)
             storePassword var
-            keyAlias = var
+            keyAlias var
             keyPassword var
         }
     }
-    compileSdkVersion 34
+
     defaultConfig {
-        applicationId 'com.crypto_tab'
+        applicationId 'com.cripto_trading'
         minSdkVersion 26
-        targetSdkVersion 34
-        versionCode 178
-        versionName '178'
+        targetSdkVersion 36
+        versionCode 1
+        versionName '1.0.0'
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         signingConfig signingConfigs.release
-
     }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -28,67 +37,57 @@ android {
     }
 
     compileOptions {
-        targetCompatibility = "1.8"
-        sourceCompatibility = "1.8"
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
-    buildToolsVersion = '31.0.0'
-    namespace 'com.crypto_tab'
 
+    namespace 'com.crypto_tab'
+    buildToolsVersion '36.0.0'
 }
 
 dependencies {
-
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
-    implementation 'androidx.gridlayout:gridlayout:1.0.0'
-
-//    implementation 'com.android.billingclient:billing:4.1.0'
-    implementation 'com.android.billingclient:billing:4.1.0'
-
-    implementation 'com.kucoin:kucoin-java-sdk:1.0.9'
-//    implementation 'com.github.binance-exchange:binance-java-api:master-SNAPSHOT'
-//    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
-    implementation 'androidx.annotation:annotation:1.7.1'
-
-
-    implementation group: 'com.google.protobuf', name: 'protobuf-java', version: '3.19.3'
-
-    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.28'
-    annotationProcessor 'org.projectlombok:lombok:1.18.28'
+    implementation 'androidx.appcompat:appcompat:1.7.1'
     implementation 'androidx.preference:preference:1.2.1'
-    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.2.1'
+    implementation 'androidx.gridlayout:gridlayout:1.1.0'
     implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.annotation:annotation:1.9.1'
+    implementation 'com.google.android.material:material:1.13.0'
 
-    implementation 'com.journeyapps:zxing-android-embedded:4.2.0'
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
 
+    implementation 'com.android.billingclient:billing:8.3.0'
+
+    implementation 'com.kucoin:kucoin-java-sdk:1.0.18'
+
+    implementation 'com.journeyapps:zxing-android-embedded:4.3.0'
     implementation 'com.facebook.shimmer:shimmer:0.5.0'
 
-    implementation 'com.squareup.okhttp3:okhttp:5.0.0-alpha.2'
-    implementation 'org.apache.commons:commons-lang3:3.9'
-    implementation 'com.google.guava:guava:30.1.1-jre'
-    implementation 'org.slf4j:slf4j-simple:1.7.25'
-    implementation 'org.slf4j:jcl-over-slf4j:1.7.25'
-    implementation 'com.google.code.gson:gson:2.8.9'
+    implementation 'com.squareup.okhttp3:okhttp:5.3.2'
+    implementation 'com.squareup.okhttp3:logging-interceptor:5.3.2'
+    implementation 'com.squareup.retrofit2:retrofit:3.0.0'
+    implementation 'com.squareup.retrofit2:converter-jackson:3.0.0'
+
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.21.0'
+    implementation 'com.google.code.gson:gson:2.13.2'
+    implementation 'com.google.protobuf:protobuf-java:4.33.5'
+
+    implementation 'org.apache.commons:commons-lang3:3.20.0'
+    implementation 'commons-codec:commons-codec:1.21.0'
+    implementation 'com.google.guava:guava:33.5.0-jre'
+
+    implementation 'org.slf4j:slf4j-simple:2.0.17'
+    implementation 'org.slf4j:jcl-over-slf4j:2.0.17'
+
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
     implementation 'com.github.signalr4j:signalr4j:2.0.4'
 
-    implementation 'commons-codec:commons-codec:1.15'
+    annotationProcessor 'org.projectlombok:lombok:1.18.42'
 
-    //Para compilar con fuentes del binance-api.
-    implementation 'org.apache.commons:commons-lang3:3.9'
-    implementation 'com.squareup.retrofit2:converter-jackson:2.7.1'
-    implementation 'com.squareup.okhttp3:okhttp:5.0.0-alpha.2'
-    implementation 'com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.2'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.7.1'
-//    implementation 'commons-codec:commons-codec:20041127.091804'
-    implementation 'junit:junit:4.13.2'
-    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
-    implementation 'com.google.android.material:material:1.10.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-
-
+    // Tests
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.7.0'
 }

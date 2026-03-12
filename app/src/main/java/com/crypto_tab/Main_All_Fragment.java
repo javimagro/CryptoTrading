@@ -176,12 +176,20 @@ public class Main_All_Fragment extends Fragment {
 
         int found_item = 0 ;
 
+        BigDecimal vl2 = new BigDecimal(  FullscreenActivity.Config_Data. Min_Volume_Pump )  ;
+
         for (idx_coin = 0; idx_coin < FullscreenActivity.CList_Data.size(); idx_coin++)
         {
 
             if ( ! FullscreenActivity.Config_Data.Filter_Coin.equals( "NONE"))
                 if (!FullscreenActivity.CList_Data.get(idx_coin).getSymbol().endsWith(FullscreenActivity.Config_Data.Filter_Coin))
                     continue ;
+
+            BigDecimal vl1 = new BigDecimal( FullscreenActivity.CList_Data.get(idx_coin).getVolume()) ;
+
+
+            if ( vl1.compareTo ( vl2 )< 0 )
+                continue ;
 
             ++ found_item ;
 

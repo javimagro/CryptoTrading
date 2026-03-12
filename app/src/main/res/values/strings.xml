@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Crypto Panel</string>
+    <string name="app_name">CriptoTrading</string>
 
     <string name="title_activity_coinlist">CoinlistActivity</string>
 
@@ -25,7 +25,7 @@
     <string name="_0_000033">0.000033</string>
     <string name="buy_sell_selection">Buy / Sell selection</string>
     <string name="navibar">NaviBar</string>
-    <string name="cryptopanel">Crypto Panel</string>
+    <string name="cryptopanel">CriptoTrading</string>
     <string name="btc_usdt">BTC/USDT</string>
     <string name="_435345">435345</string>
     <string name="_1023">1023</string>
@@ -51,7 +51,7 @@
     <string name="fill_the_fields_with_your_binance_private_and_public_data">Fill the fields with your Binance private and public data.</string>
     <string name="public_key">public KEY</string>
     <string name="private_key">private KEY</string>
-    <string name="use_those_keys_only_with_cryptopanel_app_dont_share_it">Use those keys only with Crypto Panel app, dont share it!!!!</string>
+    <string name="use_those_keys_only_with_cryptopanel_app_dont_share_it">Use those keys only with CriptoTrading app, dont share it!!!!</string>
     <string name="check">Check</string>
     <string name="save">Save</string>
     <string name="hide_dust">Hide dust</string>
@@ -88,5 +88,4 @@
     <string name="subscribe_buy_sell">Subscribe Buy/Sell</string>
     <string name="todo">TODO</string>
     <string name="todos">TODOS</string>
-
 </resources>
