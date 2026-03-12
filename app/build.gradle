@@ -41,7 +41,7 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
-    namespace 'com.crypto_tab'
+    namespace 'com.cryptotrading'
     buildToolsVersion '36.0.0'
 }
 
